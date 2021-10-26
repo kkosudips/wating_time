@@ -40,8 +40,12 @@ public:
 		msg.pose.position.x = req.x;
 		msg.pose.position.y = req.y;
 		msg.pose.position.z = 0;
-		msg.pose.orientation.w = 0.99;
-           	
+		msg.pose.orientation.w = req.ow;
+		msg.pose.orientation.z = req.oz;
+          
+
+
+
 		//judge which tb3 should be control.
 		switch(req.flag){
 			case 0:
@@ -54,7 +58,7 @@ public:
 				else time_0*=2;
 
 				//add 3 sec lets robot go to waiting point.
-				res.time = time_0+3;	
+				res.time = time_0;	
 				
 				
 				count_0++;
@@ -63,7 +67,7 @@ public:
 				tb3_1_pub.publish(msg);	
 	        		if(count_1 == 0)random(1);
 				else time_1*=2;
-				res.time = time_1+3;
+				res.time = time_1;
 
 				count_1++;
 				break;
@@ -71,7 +75,7 @@ public:
 				tb3_2_pub.publish(msg);
 				if(count_2 == 0)random(2);
 				else time_2*=2;
-				res.time = time_2+3;
+				res.time = time_2;
 
 				count_2++;
 				break;
@@ -85,7 +89,7 @@ public:
 				return true;
 		}
                                            
-		//ros::Duration(3).sleep();
+		ros::Duration(5).sleep();
 		
 		return true;
         }
@@ -93,8 +97,7 @@ public:
 		//ini waiting times from 1 to 10
                 int A[10] ={1,2,3,4,5,6,7,8,9,10};
                 int i,pos,temp;
-                srand((unsigned)time(NULL));
-		
+               
 		//shuffle 10 times
                 for(i = 0; i < 10; i++){
                         //random pos 0 to 9 
@@ -105,8 +108,8 @@ public:
                 }    
 		//choose A[0] as the waiting time.
 		if(flag==0) time_0=A[0];
-		else if(flag==1) time_1=A[0];
-		else if(flag==2) time_2=A[0];
+		else if(flag==1) time_1=A[5];
+		else if(flag==2) time_2=A[9];
                 
         }
 };
@@ -115,11 +118,12 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "wait_random_time_server");
   ros::NodeHandle n;
-
+  srand((unsigned)time(NULL));
+		
   waiting_class a;
 
   ros::ServiceServer service = n.advertiseService("wait_random_time",&waiting_class::cal_time,&a);
-  ROS_INFO("Ready to accecpt x,y,flag .");
+  ROS_INFO("Ready to accecpt x,y,ow,oz,flag.");
   ros::spin();
 
   return 0;
